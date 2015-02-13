@@ -4,8 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ResourceUtils {
 
+	private Logger LOG = LoggerFactory.getLogger(this.getClass());
+	
 	private Properties properties;
 
 	public ResourceUtils(String propertiesFile) {
@@ -16,7 +21,7 @@ public class ResourceUtils {
 			in = new FileInputStream(new File(propertiesFile));
 			properties.load(in);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Error loading properties.", e);
 		}
 	}
 

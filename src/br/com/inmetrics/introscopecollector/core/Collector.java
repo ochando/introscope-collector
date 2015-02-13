@@ -9,11 +9,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils;
 import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils.Constants;
 
 public class Collector {
 
+	private Logger LOG = LoggerFactory.getLogger(this.getClass());
+	
 	private final ResourceUtils resourceUtils;
 
 	public Collector(ResourceUtils resourceUtils) {
@@ -55,13 +60,13 @@ public class Collector {
 
 			return resultSet;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Error collecting metrics.", e);
 			return null;
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOG.error("Error closing connection.", e);
 			}
 		}
 
@@ -74,20 +79,20 @@ public class Collector {
 				+ resourceUtils.getProperty(Constants.INTROSCOPE_NODE_START) + "' and timestamp between '" + startTime
 				+ "' and '" + stopTime + "' order by timestamp ";
 
-		System.out.println(selectStatement);
+		LOG.debug(selectStatement);
 
 		ResultSet rs = null;
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(selectStatement);
 
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
+		} catch (SQLException e) {
+			LOG.error("Error selecting metrics.", e);
 		} finally {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOG.error("Error closing connection", e);
 			}
 		}
 

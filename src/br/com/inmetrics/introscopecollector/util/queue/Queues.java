@@ -10,7 +10,6 @@ public class Queues {
 	private LinkedBlockingQueue<ResultSet> resultSets;
 	private LinkedBlockingQueue<MetricDataBean> outputQueue;
 
-
 	public Queues() {
 		this.resultSets = new LinkedBlockingQueue<ResultSet>();
 		this.outputQueue = new LinkedBlockingQueue<MetricDataBean>();

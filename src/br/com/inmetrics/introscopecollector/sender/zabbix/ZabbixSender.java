@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.com.inmetrics.introscopecollector.model.MetricDataBean;
 import br.com.inmetrics.introscopecollector.sender.ISender;
@@ -21,6 +23,9 @@ import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils.Consta
 import br.com.inmetrics.introscopecollector.util.queue.Queues;
 
 public class ZabbixSender extends ISender {
+	
+	private Logger LOG = LoggerFactory.getLogger(this.getClass());
+	
 	public static final int DEFAULT_PORT = 10051;
 	public static final byte[] ZABBIX_HEADER = new byte[] { 'Z', 'B', 'X', 'D', '\1', };
 
@@ -288,9 +293,9 @@ public class ZabbixSender extends ISender {
 
 		try {
 			response = this.sendItems(senderItens);
-			System.out.println(format.format(date) + ": " + response.toString());
+			LOG.info(format.format(date) + ": " + response.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("Error sending itens.", e);
 		}
 
 		if (!((ZabbixQueues) queues).getDiscoveryListOut().isEmpty()) {
@@ -311,9 +316,9 @@ public class ZabbixSender extends ISender {
 
 					try {
 						response = this.sendItems(item);
-						System.out.println(formatDiscovery.format(dateDiscovery) + ": " + response.toString());
+						LOG.info(formatDiscovery.format(dateDiscovery) + ": " + response.toString());
 					} catch (IOException e) {
-						e.printStackTrace();
+						LOG.error("Error sending itens.", e);
 					}
 					
 					hosts.remove(value);

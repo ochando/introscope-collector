@@ -3,6 +3,9 @@ package br.com.inmetrics.introscopecollector;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.inmetrics.introscopecollector.core.Executor;
 import br.com.inmetrics.introscopecollector.sender.Sender;
 import br.com.inmetrics.introscopecollector.sender.zabbix.Discovery;
@@ -13,51 +16,59 @@ import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils.Consta
 
 public class EntryPoint {
 
+	private static Logger LOG = LoggerFactory.getLogger(EntryPoint.class);
+
 	public static IntroscopeCollector introscopeCollector;
 
 	public static void main(String[] args) {
 
-		String propertiesFile = args[0];
-		ZabbixQueues queues = new ZabbixQueues();
-		ParserMetricName parser;
-		Sender sender;
-		ParserDiscovery parserDiscovery;
-		TimerTask executor;
-		TimerTask discovery;
-		Timer timer = new Timer();
-		;
-		final Thread parserThread;
-		final Thread senderThread;
-		final Thread discoveryThread;
+		try {
+			String propertiesFile = args[0];
+			ZabbixQueues queues = new ZabbixQueues();
+			ParserMetricName parser;
+			Sender sender;
+			ParserDiscovery parserDiscovery;
+			TimerTask executor;
+			TimerTask discovery;
+			Timer timer = new Timer();
 
-		introscopeCollector = new IntroscopeCollector();
-		introscopeCollector.initializeAgent(propertiesFile);
+			final Thread parserThread;
+			final Thread senderThread;
+			final Thread discoveryThread;
 
-		parser = new ParserMetricName(queues, introscopeCollector.getResourceUtils());
+			introscopeCollector = new IntroscopeCollector();
+			introscopeCollector.initializeAgent(propertiesFile);
 
-		parserDiscovery = new ParserDiscovery(queues, introscopeCollector.getResourceUtils());
+			parser = new ParserMetricName(queues, introscopeCollector.getResourceUtils());
 
-		executor = new Executor(introscopeCollector.getResourceUtils(), queues);
-		discovery = new Discovery(introscopeCollector.getResourceUtils(), queues);
+			parserDiscovery = new ParserDiscovery(queues, introscopeCollector.getResourceUtils());
 
-		timer.schedule(executor, 5000,
-				Integer.valueOf(introscopeCollector.getResourceUtils().getProperty(Constants.COLLECT_INTERVAL)) * 1000);
+			executor = new Executor(introscopeCollector.getResourceUtils(), queues);
+			discovery = new Discovery(introscopeCollector.getResourceUtils(), queues);
 
-		timer.schedule(
-				discovery,
-				5000,
-				Integer.valueOf(introscopeCollector.getResourceUtils().getProperty(Constants.DISCOVERY_INTERVAL)) * 1000);
+			timer.schedule(
+					executor,
+					5000,
+					Integer.valueOf(introscopeCollector.getResourceUtils().getProperty(Constants.COLLECT_INTERVAL)) * 1000);
 
-		sender = new Sender(queues, introscopeCollector.getResourceUtils());
+			timer.schedule(
+					discovery,
+					5000,
+					Integer.valueOf(introscopeCollector.getResourceUtils().getProperty(Constants.DISCOVERY_INTERVAL)) * 1000);
 
-		parserThread = new Thread(parser, "Parser");
-		parserThread.start();
+			sender = new Sender(queues, introscopeCollector.getResourceUtils());
 
-		senderThread = new Thread(sender, "Sender");
-		senderThread.start();
+			parserThread = new Thread(parser, "Parser");
+			parserThread.start();
 
-		discoveryThread = new Thread(parserDiscovery, "Discovery");
-		discoveryThread.start();
+			senderThread = new Thread(sender, "Sender");
+			senderThread.start();
+
+			discoveryThread = new Thread(parserDiscovery, "Discovery");
+			discoveryThread.start();
+		} catch (Throwable t) {
+			LOG.error("Error in main thread.", t);
+		}
 
 	}
 

@@ -7,12 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.inmetrics.introscopecollector.model.MetricDataBean;
 import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils;
 import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils.Constants;
 import br.com.inmetrics.introscopecollector.util.queue.Queues;
 
 public class ParserMetricName implements Runnable {
+
+	private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
 	private LinkedBlockingQueue<ResultSet> inputResult;
 	private LinkedBlockingQueue<MetricDataBean> outputResult;
@@ -52,8 +57,9 @@ public class ParserMetricName implements Runnable {
 							metricDataBean.setMax(resultSet.getString("Max"));
 							metricDataBean.setMin(resultSet.getString("Min"));
 
-							String uniqueKey = metricDataBean.getHost() + metricDataBean.getDomain() + metricDataBean.getAgentName()
-									+ metricDataBean.getResource() + metricDataBean.getMetricName();
+							String uniqueKey = metricDataBean.getHost() + metricDataBean.getDomain()
+									+ metricDataBean.getAgentName() + metricDataBean.getResource()
+									+ metricDataBean.getMetricName();
 
 							if (!metricsToCalculate.containsKey(uniqueKey)) {
 								ArrayList<MetricDataBean> list = new ArrayList<MetricDataBean>();
@@ -64,12 +70,11 @@ public class ParserMetricName implements Runnable {
 							}
 
 							if (resourceUtils.getProperty(Constants.INTROSCOPE_LIST_METRICS).equals("true")) {
-								System.out.println("Hostname: " + metricDataBean.getHost());
-								System.out.println("Domain: " + metricDataBean.getDomain());
-								System.out.println("Resource: " + resultSet.getString("Resource"));
-								System.out.println("Agent: " + metricDataBean.getAgentName());
-								System.out.println("Metric: " + metricDataBean.getMetricName());
-								System.out.println();
+								LOG.info("Hostname: " + metricDataBean.getHost());
+								LOG.info("Domain: " + metricDataBean.getDomain());
+								LOG.info("Resource: " + resultSet.getString("Resource"));
+								LOG.info("Agent: " + metricDataBean.getAgentName());
+								LOG.info("Metric: " + metricDataBean.getMetricName() + "\n");
 							}
 
 						}
@@ -112,7 +117,7 @@ public class ParserMetricName implements Runnable {
 									metricsToSend.add(beanToSend);
 								}
 							}
-							
+
 						}
 
 						this.outputResult.addAll(metricsToSend);
@@ -120,20 +125,20 @@ public class ParserMetricName implements Runnable {
 					}
 
 				} catch (SQLException e) {
-					e.printStackTrace();
+					LOG.error("Error parsing metrics.", e);
 				}
 
 			} else {
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					LOG.error("Error sleeping while queue is empty.", e);
 				}
 			}
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOG.error("Error in parse looping.", e);
 			}
 		}
 	}
