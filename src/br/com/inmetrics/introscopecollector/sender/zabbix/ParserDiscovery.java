@@ -2,57 +2,45 @@ package br.com.inmetrics.introscopecollector.sender.zabbix;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils;
+import br.com.inmetrics.introscopecollector.core.IntroscopeSimpleJob;
 
-public class ParserDiscovery implements Runnable {
+public class ParserDiscovery extends IntroscopeSimpleJob {
 
 	private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-	private ZabbixQueues queues;
-
-	public ParserDiscovery(ZabbixQueues queues, ResourceUtils resourceUtils) {
-		this.queues = queues;
-	}
-
 	@Override
-	public void run() {
-		ResultSet resultSet;
+	public void execute() {
+		List<ResultSet> resultSets = new ArrayList<ResultSet>();
 
-		while (true) {
-			if (!queues.getDiscoveryList().isEmpty()) {
-				try {
-					Set<String> keyValues = new HashSet<String>();
-
-					resultSet = (ResultSet) queues.getDiscoveryList().poll();
-
-					if (resultSet != null) {
-
-						while (resultSet.next()) {
-							keyValues.add(resultSet.getString("Host"));
-							String metricUnique = new String(resultSet.getString("Resource").replaceAll(
-									"[\\_\\-\\|\\@]", "."));
-							keyValues.add(metricUnique);
-						}
-
-						queues.getDiscoveryListOut().addAll(keyValues);
-					}
-				} catch (SQLException e) {
-					LOG.error("Error parsing discovery.", e);
-				}
-			}
-
+		if (!((ZabbixQueues) queues).getDiscoveryList().isEmpty()) {
 			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				LOG.error("Error in discovery parse loop.", e);
+				Set<String> keyValues = new HashSet<String>();
+
+				((ZabbixQueues) queues).getDiscoveryList().drainTo(resultSets);
+
+				for (ResultSet resultSet : resultSets) {
+
+					while (resultSet.next()) {
+						keyValues.add(resultSet.getString("Host"));
+						String metricUnique = new String(resultSet.getString("Resource").replaceAll("[\\_\\-\\|\\@]",
+								"."));
+						keyValues.add(metricUnique);
+					}
+					
+				}
+				((ZabbixQueues) queues).getDiscoveryListOut().addAll(keyValues);
+				
+			} catch (SQLException e) {
+				LOG.error("Error parsing discovery.", e);
 			}
 		}
-
 	}
 }

@@ -40,8 +40,8 @@ public class ResourceUtils {
 		public static final String INTROSCOPE_METRICS_AGGREGATOR_SUM = "introscope.metrics.aggregator.sum";
 		public static final String INTROSCOPE_METRICS_AGGREGATOR_AVG = "introscope.metrics.aggregator.avg";
 
-		public static final String COLLECT_INTERVAL = "collect.interval";
-		public static final String DISCOVERY_INTERVAL = "discovery.interval";
+		public static final String COLLECT_CRON_EVERY_MIN = "collect.cron.every.min";
+		public static final String DISCOVERY_CRON_EVERY_MIN = "discovery.cron.every.min";
 
 		public static final String DATE_FORMAT = "MM/dd/yy HH:mm:ss";
 

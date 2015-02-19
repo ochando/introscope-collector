@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils.Consta
 public class Collector {
 
 	private Logger LOG = LoggerFactory.getLogger(this.getClass());
-	
+
 	private final ResourceUtils resourceUtils;
 
 	public Collector(ResourceUtils resourceUtils) {
@@ -29,15 +28,13 @@ public class Collector {
 		return resourceUtils;
 	}
 
-	public ResultSet collectMetric(String introscopeAgent) {
+	public ResultSet collectMetric(String introscopeAgent, Date startTime, Date stopTime) {
 
 		Connection conn = null;
-		String startTime;
-		String stopTime;
-		Calendar calendar;
-		Date date = new Date();
 
 		try {
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
 
 			Class.forName("com.wily.introscope.jdbc.IntroscopeDriver");
 
@@ -47,16 +44,8 @@ public class Collector {
 					+ resourceUtils.getProperty(Constants.INTROSCOPE_SERVER) + ":"
 					+ resourceUtils.getProperty(Constants.INTROSCOPE_EM_PORT));
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-
-			stopTime = dateFormat.format(date);
-			calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			calendar.add(Calendar.MINUTE, -Integer.valueOf(resourceUtils.getProperty(Constants.COLLECT_INTERVAL))
-					.intValue() / 60);
-			startTime = dateFormat.format(calendar.getTime());
-
-			ResultSet resultSet = selectMetrics(conn, startTime, stopTime, introscopeAgent);
+			ResultSet resultSet = selectMetrics(conn, dateFormat.format(startTime), dateFormat.format(stopTime),
+					introscopeAgent);
 
 			return resultSet;
 		} catch (Exception e) {
@@ -64,7 +53,8 @@ public class Collector {
 			return null;
 		} finally {
 			try {
-				conn.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				LOG.error("Error closing connection.", e);
 			}
