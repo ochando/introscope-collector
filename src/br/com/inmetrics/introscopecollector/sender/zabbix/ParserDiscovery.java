@@ -30,14 +30,13 @@ public class ParserDiscovery extends IntroscopeSimpleJob {
 
 					while (resultSet.next()) {
 						keyValues.add(resultSet.getString("Host"));
-						String metricUnique = new String(resultSet.getString("Resource").replaceAll("[\\_\\-\\|\\@]",
-								"."));
+						String metricUnique = new String(resultSet.getString("Resource").replaceAll("[\\-\\|\\@]", "."));
 						keyValues.add(metricUnique);
 					}
-					
+
 				}
 				((ZabbixQueues) queues).getDiscoveryListOut().addAll(keyValues);
-				
+
 			} catch (SQLException e) {
 				LOG.error("Error parsing discovery.", e);
 			}
