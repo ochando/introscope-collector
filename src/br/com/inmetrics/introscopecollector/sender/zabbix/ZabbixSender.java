@@ -268,8 +268,8 @@ public class ZabbixSender extends ISender {
 
 	public void send(List<MetricDataBean> metricDataBeans) {
 		ZabbixSenderResponse response = null;
-		ArrayList<ZabbixSenderItemDiscovery> itemDiscoveries;
-		ZabbixSenderItemDiscovery senderItemDiscovery;
+//		ArrayList<ZabbixSenderItemDiscovery> itemDiscoveries;
+//		ZabbixSenderItemDiscovery senderItemDiscovery;
 
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat(Constants.DATE_FORMAT);
@@ -298,32 +298,43 @@ public class ZabbixSender extends ISender {
 			LOG.error("Error sending itens.", e);
 		}
 
+		//TODO Implement DiscoveryZabbix for multiple agents.
 		if (!((ZabbixQueues) queues).getDiscoveryListOut().isEmpty()) {
 			ArrayList<String> newKeys = new ArrayList<>();
 			((ZabbixQueues) queues).getDiscoveryListOut().drainTo(newKeys);
-			itemDiscoveries = new ArrayList<>();
-
-			for (String value : newKeys) {
-				if (hosts.contains(value)) {
-					senderItemDiscovery = new ZabbixSenderItemDiscovery("{#SERVICE}", value);
-					itemDiscoveries.add(senderItemDiscovery);
-
-					Date dateDiscovery = new Date();
-					SimpleDateFormat formatDiscovery = new SimpleDateFormat(Constants.DATE_FORMAT);
-
-					String jsonData = this.sendItemsDiscovery(itemDiscoveries);
-					ZabbixSenderItem item = new ZabbixSenderItem(value, "introscope.discovey", jsonData);
-
-					try {
-						response = this.sendItems(item);
-						LOG.info(formatDiscovery.format(dateDiscovery) + ": " + response.toString());
-					} catch (IOException e) {
-						LOG.error("Error sending itens.", e);
-					}
-					
-					hosts.remove(value);
-				}
-			}
+//			itemDiscoveries = new ArrayList<>();
+//
+//			int count = 0;
+//			String hostDiscovery = "";
+//			
+//			for (String value : newKeys) {
+//				if (count == 0) {
+//					hostDiscovery = value;
+//					count++;
+//				} else {
+//					senderItemDiscovery = new ZabbixSenderItemDiscovery(
+//							"{#SERVICE}", value);
+//					itemDiscoveries.add(senderItemDiscovery);
+//				}
+//
+//			}
+//
+//			Date dateDiscovery = new Date();
+//			SimpleDateFormat formatDiscovery = new SimpleDateFormat(
+//					Constants.DATE_FORMAT);
+//
+//			String jsonData = this.sendItemsDiscovery(itemDiscoveries);
+//			ZabbixSenderItem item = new ZabbixSenderItem(hostDiscovery,
+//					"custom.service.discovery", jsonData);
+//			ArrayList<ZabbixSenderItem> senderItem = new ArrayList<>();
+//			senderItem.add(item);
+//
+//			try {
+//				response = this.sendItems(item);
+//				LOG.info(formatDiscovery.format(dateDiscovery) + ": " + response.toString());
+//			} catch (IOException e) {
+//				LOG.error("Error sending itens.", e);
+//			}
 		}
 	}
 
