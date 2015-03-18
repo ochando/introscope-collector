@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import br.com.inmetrics.introscopecollector.core.Executor;
 import br.com.inmetrics.introscopecollector.sender.Sender;
-import br.com.inmetrics.introscopecollector.sender.zabbix.Discovery;
-import br.com.inmetrics.introscopecollector.sender.zabbix.ParserDiscovery;
 import br.com.inmetrics.introscopecollector.sender.zabbix.ZabbixQueues;
 import br.com.inmetrics.introscopecollector.util.parser.ParserMetricName;
 import br.com.inmetrics.introscopecollector.util.properties.ResourceUtils;
@@ -67,17 +65,17 @@ public class EntryPoint {
 			Trigger parserExecutorTrigger = newTrigger().withIdentity("ParserExecutorTrigger", "executor")
 					.withSchedule(simpleSchedule().withIntervalInMilliseconds(500).repeatForever()).build();
 
-			JobDetail discoveryJob = newJob(Discovery.class).withIdentity("DiscoveryJob", "discovery")
-					.usingJobData(jobDataMap).build();
+//			JobDetail discoveryJob = newJob(Discovery.class).withIdentity("DiscoveryJob", "discovery")
+//					.usingJobData(jobDataMap).build();
 			
-			JobDetail parserDiscoveryJob = newJob(ParserDiscovery.class).withIdentity("ParserDiscoveryJob", "discovery")
-					.usingJobData(jobDataMap).build();
+//			JobDetail parserDiscoveryJob = newJob(ParserDiscovery.class).withIdentity("ParserDiscoveryJob", "discovery")
+//					.usingJobData(jobDataMap).build();
 
-			Trigger discoveryTrigger = newTrigger().withIdentity("DiscoveryTrigger", "discovery")
-					.withSchedule(cronSchedule("0 0/" + discoveryCron + " * * * ?")).build();
+//			Trigger discoveryTrigger = newTrigger().withIdentity("DiscoveryTrigger", "discovery")
+//					.withSchedule(cronSchedule("0 0/" + discoveryCron + " * * * ?")).build();
 			
-			Trigger parserDiscoveryTrigger = newTrigger().withIdentity("ParserDiscoveryTrigger", "discovery")
-					.withSchedule(simpleSchedule().withIntervalInMilliseconds(500).repeatForever()).build();
+//			Trigger parserDiscoveryTrigger = newTrigger().withIdentity("ParserDiscoveryTrigger", "discovery")
+//					.withSchedule(simpleSchedule().withIntervalInMilliseconds(500).repeatForever()).build();
 			
 			JobDetail senderJob = newJob(Sender.class).withIdentity("SenderJob", "sender")
 					.usingJobData(jobDataMap).build();
@@ -88,8 +86,8 @@ public class EntryPoint {
 			sched.scheduleJob(executorJob, executorTrigger);
 			sched.scheduleJob(parserExecutorJob, parserExecutorTrigger);
 			
-			sched.scheduleJob(discoveryJob, discoveryTrigger);
-			sched.scheduleJob(parserDiscoveryJob, parserDiscoveryTrigger);
+//			sched.scheduleJob(discoveryJob, discoveryTrigger);
+//			sched.scheduleJob(parserDiscoveryJob, parserDiscoveryTrigger);
 			
 			sched.scheduleJob(senderJob, senderTrigger);
 

@@ -50,6 +50,10 @@ public class ResourceUtils {
 
 		public static final String INTROSCOPE_LIST_METRICS = "list.metrics.exit";
 		public static final String DEBUG = "introscope.collector.debug";
+		
+		public static final String KAFKA_BROKER_LIST = "kafka.broker.list";
+		public static final String KAFKA_REQUIRED_ACKS = "kafka.required.acks";
+		public static final String KAFKA_TOPIC_NAME = "kafka.topic.name";
 	}
 
 }

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import br.com.inmetrics.introscopecollector.core.IntroscopeSimpleJob;
 import br.com.inmetrics.introscopecollector.model.MetricDataBean;
-import br.com.inmetrics.introscopecollector.sender.zabbix.ZabbixSender;
+import br.com.inmetrics.introscopecollector.sender.kafka.KafkaSender;
 
 public class Sender extends IntroscopeSimpleJob {
 
@@ -17,7 +17,7 @@ public class Sender extends IntroscopeSimpleJob {
 	public void execute() {
 
 		LinkedBlockingQueue<MetricDataBean> outputResult = queues.getOutputQueue();
-		ISender sender = new ZabbixSender(queues, resourceUtils);
+		ISender sender = new KafkaSender(queues, resourceUtils);
 
 		try {
 			if (!outputResult.isEmpty()) {
