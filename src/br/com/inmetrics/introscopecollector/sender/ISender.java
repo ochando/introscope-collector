@@ -17,4 +17,6 @@ public abstract class ISender {
 	}
 	
 	protected abstract void send(List<MetricDataBean> metricDataBeans);
+	
+	protected abstract void close();
 }

@@ -65,7 +65,12 @@ public class KafkaSender extends ISender {
 			producer.send(keyedMessages);
 		} catch (Exception e) {
 			LOG.error("Error in kafka sender.", e);
-		}
+		} 
+	}
+
+	@Override
+	protected void close() {
+		producer.close();
 	}
 
 }

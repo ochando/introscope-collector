@@ -29,6 +29,8 @@ public class Sender extends IntroscopeSimpleJob {
 
 		} catch (Exception e) {
 			LOG.error("Error in sender metrics", e);
+		} finally {
+			sender.close();
 		}
 	}
 }
