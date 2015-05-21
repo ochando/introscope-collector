@@ -38,7 +38,7 @@ public class ParserMetricName extends IntroscopeSimpleJob {
 						metricDataBean.setHost(resultSet.getString("Host"));
 						metricDataBean.setDomain(resultSet.getString("Domain"));
 						metricDataBean.setResource(resultSet.getString("Resource").replaceAll("[\\-\\|\\@]", "."));
-						metricDataBean.setAgentName(resultSet.getString("Agentname"));
+						metricDataBean.setAgentName(resultSet.getString("AgentName"));
 						metricDataBean.setMetricName(resultSet.getString("MetricName"));
 						metricDataBean.setValue(resultSet.getString("Value"));
 						metricDataBean.setMax(resultSet.getString("Max"));
