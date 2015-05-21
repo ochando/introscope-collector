@@ -1,7 +1,6 @@
 package br.com.inmetrics.introscopecollector.sender.kafka;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -55,7 +54,7 @@ public class KafkaSender extends ISender {
 				agentData.setKey("introscope[\"" + metricDataBean.getResource() + "," + metricDataBean.getMetricName()
 						+ "\"]");
 				agentData.setValue(metricDataBean.getValue());
-				String nanoTime = String.valueOf(new Date().getTime());
+				String nanoTime = String.valueOf(System.nanoTime());
 				String clock = nanoTime.substring(0,10);
 				String ns = nanoTime.substring(10,nanoTime.length());
 				agentData.setClock(clock);
